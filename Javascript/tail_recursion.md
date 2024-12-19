@@ -124,7 +124,7 @@ function sumArray(arr, total) {
     if(arr.length === 1) {
         return total
     }
-    return sum(arr, total + arr.pop())
+    return sumArray(arr, total + arr.pop())
 }
 ```
 

@@ -156,3 +156,21 @@ getType()            // "undefined" typeof 直接返回
 getType(function(){}) // "function" typeof能判断，因此首字母小写
 getType(/123/g)      //"RegExp" toString返回
 ```
+
+## 四、扩展
+
+1. 为什么typeof null的结果是Object?
+
+`typeof null`的结果为`Object`的原因是一个`bug`。在 `javascript` 的最初版本中，使用的 `32`位系统，`js`为了性能优化，使用低位来存储变量的类型信
+
+|数据类型|机器码标识|
+|--|--|
+|对象(Object)|000|
+|整数|1|
+|浮点数|010|
+|字符串|100|
+|布尔|110|
+|undefined|-2^31(即全为1)|
+|null|全为0|
+
+在判断数据类型时，是根据机器码低位标识来判断的，而`null`的机器码标识为全`0`，而对象的机器码低位标识为`000`。所以`typeof null`的结果被误判为`Object`。
