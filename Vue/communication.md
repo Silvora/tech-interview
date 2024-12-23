@@ -43,7 +43,7 @@ categories:
 2.  通过 \$emit 触发自定义事件
 3.  使用 ref
 4.  EventBus
-5.  $parent 或$root
+5.  $parent 或 $root
 6.  attrs 与 listeners
 7.  Provide 与 Inject
 8.  Vuex
@@ -152,7 +152,7 @@ this.$bus.$emit('foo')
 this.$bus.$on('foo', this.handle)  
 ```
 
-### $parent 或$ root
+### $parent 或 $root
 
 - 通过共同祖辈`$parent`或者`$root`搭建通信桥连
 
@@ -166,11 +166,11 @@ this.$bus.$on('foo', this.handle)
 `this.$parent.emit('add')  
 `
 
-### $attrs  与$ listeners
+### $attrs  与 $listeners
 
  -    适用场景：祖先传递数据给子孙
  -    设置批量向下传属性`$attrs`和 `$listeners`
- -    包含了父级作用域中不作为 `prop` 被识别 \(且获取\) 的特性绑定 \( class 和 style 除外\)。
+ -    包含了父级作用域中不作为 `prop` 被识别 **且获取** 的特性绑定 `class` 和 `style` 除外。
  -    可以通过 `v-bind="$attrs"` 传⼊内部组件
 
 ```js

@@ -69,7 +69,7 @@ export let mutations = {
     <button @click="setAge(18)">改变年龄</button>
   </div>
 </template>
-import { state, mutations } from '@/store
+import { state, mutations } from '@/store'
 export default {
   // 在计算属性中拿到值
   computed: {

@@ -10,6 +10,8 @@ categories:
 ## 一、Vite是什么
 `Vite`是新一代的前端构建工具，类似于`Webpack+ Webpack-dev-server`。其主要利用浏览器`ESM`特性导入组织代码，在服务器端按需编译返回，完全跳过了打包这个概念，服务器随起随用。生产中利用`Rollup`作为打包工具，号称下一代的前端构建工具。
 
+由于 `ESM` 的浏览器支持 才有`Vite`的方案
+
 Vite有如下特点：
 
 - 快速的冷启动: `No Bundle + esbuild` 预构建

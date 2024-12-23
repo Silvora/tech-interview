@@ -48,8 +48,84 @@ categories:
 主要体现在编译方面：
 
 - diff算法优化
+ ```js
+ // 在 Vue2 里 updateChildren 会进行:
+ // 头和头比
+ // 尾和尾比
+ // 头和尾比
+ // 尾和头比
+ // 都没有命中的对比
+
+
+ // 在 Vue3 里 patchKeyedChildren 为
+ // 头和头比
+ // 尾和尾比
+ // 基于最长递增子序列进行移动/添加/删除
+ ```
 - 静态提升
+```js
+// 使用静态标记
+export const enum PatchFlags {
+  TEXT = 1 ,  // 动态文本节点
+  CLASS = 1 << 1,  // 2   动态class
+  STYLE = 1 << 2,  // 4   动态style
+  PROPS = 1 << 3,  // 8   除去class/style以外的动态属性
+  FULL_PROPS = 1 << 4,       // 16  有动态key属性的节点，当key改变时，需进行完整的diff比较
+  HYDRATE_EVENTS = 1 << 5,   // 32  有监听事件的节点
+  STABLE_FRAGMENT = 1 << 6,  // 64  一个不会改变子节点顺序的fragment (一个组件内多个根元素就会用fragment包裹)
+  KEYED_FRAGMENT = 1 << 7,   // 128 带有key属性的fragment或部分子节点有key
+  UNKEYEN_FRAGMENT = 1 << 8, // 256  子节点没有key的fragment
+  NEED_PATCH = 1 << 9,       // 512  一个节点只会进行非props比较
+  DYNAMIC_SLOTS = 1 << 10,   // 1024   动态slot
+  HOISTED = -1,  // 静态节点 
+  BAIL = -2      // 表示 Diff 过程中不需要优化
+}
+
+// 在什么地方用到的呢？比如下面这样的代码
+<div id="app">
+    <div>沐华</div>
+    <p>{{ age }}</p>
+</div>
+
+// Vue2 中编译的结果
+with(this){
+    return _c(
+      'div',
+      {attrs:{"id":"app"}},
+      [ 
+        _c('div',[_v("沐华")]),
+        _c('p',[_v(_s(age))])
+      ]
+    )
+}
+
+// Vue3 中编译的结果
+const _hoisted_1 = { id: "app" }
+const _hoisted_2 = /*#__PURE__*/_createElementVNode("div", null, "沐华", -1 /* HOISTED */)
+
+export function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (_openBlock(), _createElementBlock("div", _hoisted_1, [
+    _hoisted_2,
+    _createElementVNode("p", null, _toDisplayString(_ctx.age), 1 /* TEXT */)
+  ]))
+}
+
+// 看到上面编译结果中的 -1 和 1 了吗，这就是静态标记，这是在 Vue2 中没有的，patch 过程中就会判断这个标记来 Diff 优化流程，跳过一些静态节点对比
+```
 - 事件监听缓存
+  ```js
+  // 比如这样一个有点击事件的按钮
+  <button @click="handleClick">按钮</button>
+
+  // Vue3 被编译后的结果
+  export function render(_ctx, _cache, $props, $setup, $data, $options) {
+    return (_openBlock(), _createElementBlock("button", {
+      onClick: _cache[0] || (_cache[0] = (...args) => (_ctx.handleClick && _ctx.handleClick(...args)))
+    }, "按钮"))
+  } 
+
+  // onClick 会先读取缓存，如果缓存没有的话，就把传入的事件存到缓存里，都可以理解为变成静态节点了，优秀吧，而在 Vue2 中就没有缓存，就是动态的
+  ```
 - SSR优化
 
 下篇文章我们会进一步介绍

@@ -25,7 +25,9 @@ categories:
 
 ## 二、插件是什么
 
-插件通常用来为 `Vue` 添加全局功能。插件的功能范围没有严格的限制——一般有下面几种：
+插件通常用来为 `Vue` 添加全局功能。插件的功能范围没有严格的限制
+
+一般有下面几种：
 
 - 添加全局方法或者属性。如: `vue-custom-element`
 - 添加全局资源：指令/过滤器/过渡等。如 `vue-touch`
@@ -77,6 +79,23 @@ Vue.component('componentA',{
 
 #### 编写插件
 `vue`插件的实现应该暴露一个 `install` 方法。这个方法的第一个参数是 `Vue` 构造器，第二个参数是一个可选的选项对象
+
+插件编写可以是一个函数,也可以是一个对象
+
+```js
+// 函数定义
+function plugin(Vue){
+  // ...
+}
+// 对象定义
+const plugin = {
+  install(Vue){
+    // ...
+  }
+}
+
+
+```
 
 ```js
 MyPlugin.install = function (Vue, options) {

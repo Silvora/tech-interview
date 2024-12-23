@@ -65,6 +65,7 @@ axios.interceptors.response.use(function (response) {
 **取消请求**
 
 ```js
+// 此 API 从 v0.22.0 开始已被弃用，不应在新项目中使用。
 // 方式一
 const CancelToken = axios.CancelToken;
 const source = CancelToken.source();
@@ -85,6 +86,19 @@ axios.get('xxxx', {
   })
 });
 cancel('主动取消请求');
+```
+
+```js
+// 从 v0.22.0 开始，Axios 支持以 fetch API 方式—— AbortController 取消请求：
+const controller = new AbortController();
+
+axios.get('/foo/bar', {
+   signal: controller.signal
+}).then(function(response) {
+   //...
+});
+// 取消请求
+controller.abort()
 ```
 
 

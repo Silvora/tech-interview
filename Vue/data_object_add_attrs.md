@@ -58,18 +58,18 @@ const app = new Vue({
 ```js
 const obj = {}
 Object.defineProperty(obj, 'foo', {
-        get() {
-            console.log(`get foo:${val}`);
-            return val
-        },
-        set(newVal) {
-            if (newVal !== val) {
-                console.log(`set foo:${newVal}`);
-                val = newVal
-            }
+    get() {
+        console.log(`get foo:${val}`);
+        return val
+    },
+    set(newVal) {
+        if (newVal !== val) {
+            console.log(`set foo:${newVal}`);
+            val = newVal
         }
-    })
-}
+    }
+})
+
 ```
 
 当我们访问`foo`属性或者设置`foo`值的时候都能够触发`setter`与`getter`

@@ -17,14 +17,12 @@ categories:
 
 ### 特性
 
-- 从浏览器中创建 `XMLHttpRequests`
-- 从 `node.js` 创建 `http`请求
+- 支持浏览器和 node.js环境
 - 支持 `Promise` API
-- 拦截请求和响应
-- 转换请求数据和响应数据
-- 取消请求
+- 拦截请求和响应、转换请求数据和响应数据
+- 请求可以取消、中断
 - 自动转换` JSON` 数据
-- 客户端支持防御`XSRF`
+- 客户端支持防御`CSRF/XSRF`
 
 ### 基本使用
 
@@ -57,6 +55,20 @@ axios({
   // res为后端返回的数据
   console.log(res);   
 })
+
+
+// 指定所有环境均只使用 fetch 方法
+axios({
+  url: "https://www.xxx.com",
+  adapter: "fetch",
+});
+
+// 调整使用适配器的优先级，在当前环境中，按照数组顺序，优先支持哪种方法，就使用哪种
+axios({
+  url: "https://www.xxx.com",
+  adapter: ["fetch", "xhr", "http"],
+});
+
 ```
 
 
@@ -322,6 +334,33 @@ axios.interceptors.response.use(response => {
 })
 ```
 
+## 四、扩展
+1. `get`，`post`做参数的拼接，如果是`param`填写会自动拼接好，为啥要去干预呢?
+对于 `GET` 请求，`Axios` 会自动将 `params` 配置项中的参数拼接到 `URL` 的查询字符串中。例如:
+```js
+axios.get('/user', {
+  params: {
+    id: 123,
+    name: '张三'
+  }
+});
+// 实际请求的 URL：/user?id=123&name=张三
+```
+
+对于 `POST` 请求，`Axios` 会根据 `Content-Type` 请求头来处理 `data` 配置项中的数据。如果 `Content-Type` 是 `application/x-www-form-urlencoded`，则会将数据编码成 `key=value&key=value` 的格式；如果 `Content-Type` 是 `application/json`，则会将数据序列化成 `JSON` 字符串。
+
+为什么要干预参数拼接？
+- 自定义参数格式: 有些 API 可能需要特定的参数格式，例如数组参数需要以特定的方式编码。
+- 参数加密: 为了安全起见，我们可能需要对参数进行加密后再发送。
+- 特殊字符处理: URL 中某些字符需要进行转义，手动处理可以更灵活地控制转义过程。
+  
+
+
+
+
+1. axios拦截重复请求，你是如何判断重复请求?
+
+拦截重复请求的常见做法是使用一个对象或 Map 来存储正在进行的请求。在发送请求前，检查是否已经存在相同的请求，如果存在则取消之前的请求或直接返回缓存的结果。
 
 
 ### 小结
