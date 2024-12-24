@@ -127,10 +127,59 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   // onClick 会先读取缓存，如果缓存没有的话，就把传入的事件存到缓存里，都可以理解为变成静态节点了，优秀吧，而在 Vue2 中就没有缓存，就是动态的
   ```
 - SSR优化
+```js
+// createStaticVNode 的使用
+<template>
+  <div>
+    <p>This is static content.</p>
+    <p>This is also static content.</p>
+    <dynamic-component />
+  </div>
+</template>
 
-下篇文章我们会进一步介绍
+<script>
+import { createStaticVNode } from 'vue';
+
+export default {
+  setup() {
+    // 在编译时，静态节点会被转换为 createStaticVNode
+    // 类似于：
+    // const staticVNode = createStaticVNode('<div><p>This is static content.</p><p>This is also static content.</p></div>');
+
+    return {};
+  },
+};
+</script>
+// 两个 <p> 标签的内容是静态的，不会发生变化。Vue 3 在编译时会将它们转换为 createStaticVNode，在渲染时直接将其 innerHTML 到 DOM 中，避免了创建虚拟 DOM 和进行 diff 的开销
+```
+```js
+// 字符串拼接的优化
+<template>
+  <div>
+    <span>{{ message }}</span>
+  </div>
+</template>
 
 
+// 类似于：
+const html = `<div><span>${message}</span></div>`;
+
+// 在 Vue 2 中，这段代码会生成一个包含 span 节点的 VDOM 树。而在 Vue 3 中，如果 message 是一个简单的字符串，Vue 可能会将其直接拼接成字符串
+```
+
+
+```js
+// 按需响应式
+import { reactive } from 'vue';
+
+const state = reactive({
+  a: 1,
+  b: 2,
+});
+
+// 只有访问 state.a 时，才会触发 getter，将相关的 effect 收集起来
+console.log(state.a);
+```
 
 ### 更友好
 

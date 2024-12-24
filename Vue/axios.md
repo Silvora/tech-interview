@@ -252,7 +252,7 @@ export function httpPost({
       }],
       // 发送的数据
       data,
-      // url参数
+      // url参数
       params
 
     }).then(res => {

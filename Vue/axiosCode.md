@@ -677,6 +677,62 @@ if (config.cancelToken) {
 
 
 
+## 四、adapter适配器
+
+- 浏览器环境：依赖于`XMLHttpRequest`，使用`xhr`对象发起`http`请求。
+- `node`环境：依赖于`nodejs`的原生`http`模块。
+```js
+function getDefaultAdapter() {
+  var adapter;
+  // 判断XMLHttpRequest对象是否存在 存在则代表为浏览器环境
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = require('./adapters/xhr');
+    // node环境 使用原生http发起请求
+  } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
+    adapter = require('./adapters/http');
+  }
+  return adapter;
+}
+
+```
+
+`Axios` 现在虽然支持使用`fetch()`来发起网络请求了，但并不是作为默认的方法。在前端浏览器方面，目前默认的还是使用`xhr`。如果想使用 `fetch` 方法的话，需要手动指定。
+
+`Axios` 提供了默认使用适配器的顺序`["xhr", "http", "fetch"]`
+
+```js
+// 指定所有环境均只使用 fetch 方法
+axios({
+  url: "https://www.xxx.com",
+  adapter: "fetch",
+});
+
+// 调整使用适配器的优先级，在当前环境中，按照数组顺序，优先支持哪种方法，就使用哪种
+axios({
+  url: "https://www.xxx.com",
+  adapter: ["fetch", "xhr", "http"],
+});
+```
+
+判断是否支持该适配器
+
+```js
+// 判断是否支持 xhr 适配器
+const isXHRAdapterSupported = typeof XMLHttpRequest !== "undefined";
+
+// 判断是否支持 fetch 适配器
+const isFetchSupported = typeof fetch === "function" && typeof Request === "function" && typeof Response === "function";
+
+// 判断是否支持 http 适配器
+const isHttpAdapterSupported = typeof process !== "undefined" && utils.kindOf(process) === "process";
+```
+
+在之前的版本中，`Axios` 是判断当前环境支持哪个适配器，就使用哪个适配。比如支持`XMLHttpRequest`方法，就使用 `xhr`；若支持`process`，则说明是在 `Node.js` 环境中，则使用 `http`。
+
+但随着 `fetch` 适配器的加入，并不能再只判断当前环境是否支持某个适配器，因为可能同时多种适配器，只能考虑优先使用哪个适配器。
+
+
 ### 小结
 
  ![](https://static.vue-js.com/b1d2ebd0-48b6-11eb-ab90-d9ae814b240d.png)
