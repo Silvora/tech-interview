@@ -7,7 +7,7 @@ categories:
 
 # 面试官：Web Worker是什么？
 
-## Web Worker作用
+## 一、Web Worker作用
 
 `Web Worker` 是 `HTML5` 标准的一部分，这一规范定义了一套 `API`，允许我们在 `js` 主线程之外开辟新的 `Worker` 线程，并将一段 js 脚本运行其中，它赋予了开发者利用 `js` 操作多线程的能力。
 
@@ -18,7 +18,7 @@ categories:
 在 `Worker` 线程上下文中，操作 `DOM` 的行为也是不可行的，`document`对象也不存在。但是，`location`和`navigator`对象可以以可读方式访问。除此之外，绝大多数 `Window` 对象上的方法和属性，都被共享到 `Worker` 上下文全局对象 `WorkerGlobalScope` 中。同样，`Worker` 线程上下文也存在一个顶级对象 `self`。
 
 
-## Web Worker使用
+## 二、Web Worker使用
 
 创建 `worker` 只需要通过 `new` 调用 `Worker()` 构造函数即可，它接收两个参数
 
@@ -101,7 +101,7 @@ self.close(); // 直接执行close方法就ok了
 
 
 
-## SharedWorker
+## 三、SharedWorker
 
 `SharedWorker` 是一种特殊类型的 `Worker`，可以被多个浏览上下文访问，比如多个 `windows`，`iframes` 和 `workers`，但这些浏览上下文必须同源。它们实现于一个不同于普通 `worker` 的接口，具有不同的全局作用域：`SharedWorkerGlobalScope` ，但是继承自`WorkerGlobalScope`
 

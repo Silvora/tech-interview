@@ -125,7 +125,7 @@ changeText() {
 changeText() {
   setTimeout(() => {
     this.setState({
-      message: "你好啊
+      message: "你好啊"
     });
     console.log(this.state.message); // 你好啊
   }, 0);

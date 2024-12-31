@@ -250,6 +250,6 @@ export default {
 
 ## 参考文献
 
-- https://bbs.huaweicloud.com/blogs/265503)
+- https://bbs.huaweicloud.com/blogs/265503
 - https://huang-qing.github.io/react/2019/05/29/React-VirDom/
 - https://segmentfault.com/a/1190000018891454
