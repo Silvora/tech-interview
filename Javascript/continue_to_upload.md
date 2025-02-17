@@ -245,14 +245,117 @@ formdata.append('filename', md5code+'.'+fileType);
 ## 小结
 当前的伪代码，只是提供一个简单的思路，想要把事情做到极致，我们还需要考虑到更多场景，比如
 
-- 切片上传失败怎么办
-- 上传过程中刷新页面怎么办
-- 如何进行并行上传
-- 切片什么时候按数量切，什么时候按大小切
-- 如何结合 Web Worker 处理大文件上传
-- 如何实现秒传
+- 切片上传失败怎么办？
+  - **记录上传状态：** 为每个切片记录上传状态（成功、失败、待上传）
+  - **重试机制：** 当某个切片上传失败时，可以在一定时间后重试上传
+  - **服务器端校验：** 服务器端应支持校验已上传的切片，避免重复上传
 
-人生又何尝不是如此，极致的人生体验有无限可能，越是后面才发现越是精彩 ~_~
+```js
+async function uploadChunk(file, chunk, chunkIndex, retries = 3) {
+    try {
+        const formData = new FormData();
+        formData.append('file', chunk);
+        formData.append('chunkIndex', chunkIndex);
+        const response = await fetch('/upload', { method: 'POST', body: formData });
+        if (!response.ok) throw new Error('Upload failed');
+    } catch (error) {
+        if (retries > 0) {
+            return uploadChunk(file, chunk, chunkIndex, retries - 1);
+        } else {
+            throw error;
+        }
+    }
+}
+```
+
+- 上传过程中刷新页面怎么办？
+  - **本地存储：** 使用localStorage或sessionStorage保存上传进度
+  - **恢复上传：** 页面重新加载后，读取本地存储的上传进度，继续上传未完成的切片
+  
+```js
+// 保存上传进度
+localStorage.setItem('uploadProgress', JSON.stringify({ fileId: '123', uploadedChunks: [0, 1, 2] }));
+
+// 恢复上传
+const progress = JSON.parse(localStorage.getItem('uploadProgress'));
+if (progress) {
+    resumeUpload(progress.fileId, progress.uploadedChunks);
+}
+```
+
+
+
+
+- 如何进行并行上传？
+  - 可以通过同时发起多个fetch请求来实现。可以使用Promise.all来管理多个并行的上传请求
+  
+```js
+async function uploadChunksInParallel(file, chunks) {
+    const uploadPromises = chunks.map((chunk, index) => uploadChunk(file, chunk, index));
+    await Promise.all(uploadPromises);
+}
+```
+
+
+- 切片什么时候按数量切，什么时候按大小切？
+  - **按数量切：** 当文件大小不确定或需要均匀分配切片时，可以按数量切。例如，将文件切成10个切片
+  - **按大小切：** 当需要控制每个切片的大小时，可以按大小切。例如，每个切片大小为1MB
+
+```js
+function splitFile(file, chunkSize) {
+    const chunks = [];
+    let start = 0;
+    while (start < file.size) {
+        chunks.push(file.slice(start, start + chunkSize));
+        start += chunkSize;
+    }
+    return chunks;
+}
+```
+
+
+
+- 如何结合 Web Worker 处理大文件上传？
+  - Web Worker 可以在后台线程中处理文件切片，避免阻塞主线程。可以将文件切片的逻辑放在Web Worker中执行
+  
+```js
+// main.js
+const worker = new Worker('worker.js');
+worker.postMessage({ file: file });
+worker.onmessage = (event) => {
+    const chunks = event.data;
+    uploadChunksInParallel(file, chunks);
+};
+
+// worker.js
+self.onmessage = (event) => {
+    const file = event.data.file;
+    const chunks = splitFile(file, 1024 * 1024); // 1MB chunks
+    self.postMessage(chunks);
+};
+```
+
+- 如何实现秒传？
+  - 秒传是指文件已经存在于服务器上，无需再次上传
+  - **文件哈希：** 在上传前计算文件的哈希值（如MD5）
+  - **服务器校验：** 将哈希值发送到服务器，服务器检查是否已存在相同哈希值的文件
+  - **秒传确认：** 如果文件已存在，服务器返回秒传确认，客户端无需上传
+
+```js
+async function checkFileExists(file) {
+    const hash = await calculateFileHash(file);
+    const response = await fetch(`/checkFile?hash=${hash}`);
+    const result = await response.json();
+    return result.exists;
+}
+
+async function calculateFileHash(file) {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('MD5', buffer);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+```
+
 
 ## 参考文献
 
