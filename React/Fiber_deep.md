@@ -8,3 +8,8 @@ categories:
 今天面试也问到了，但我说到Fiber能异步可中断后，面试官问怎么中断，我不会，他继续问React是怎么运行的，我又不会回答
 
 fiber双缓冲
+
+遍历规则
+![](https://cdn.jsdelivr.net/gh//Silvora/oss@main/images/20250220145135784.png)
+链表规则
+![](https://cdn.jsdelivr.net/gh//Silvora/oss@main/images/20250220145410068.png)
