@@ -111,7 +111,7 @@ a.next() // Object{value:NaN, done:true}
 var b = foo(5);
 b.next() // { value:6, done:false }
 b.next(12) // { value:8, done:false }
-b.next(13) // { value:42, done:true }
+b.next(13) // { value:42, done:true } 5+12+4+8 = 42 -13 = 29
 ```
 
 正因为`Generator `函数返回`Iterator`对象，因此我们还可以通过`for...of`进行遍历
