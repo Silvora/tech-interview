@@ -100,8 +100,29 @@ name=qiming.c&age=22
 
 对于`POST`，浏览器先发送`header`，服务器响应100 `continue`，浏览器再发送`data`，服务器响应200 ok
 
-并不是所有浏览器都会在`POST`中发送两次包，`Firefox`就只发送一次
+现代浏览器（如 `Chrome`、`Edge`、`Firefox`）默认不会使用 `Expect: 100-continue`，除非遇到特定的情况，如：
+- 请求体较大（比如上传大文件）。
+- 明确设置了 `Expect: 100-continue` 头。
 
+
+### 预检请求(option)
+并不是所有 POST 请求都会触发预检请求，只有当请求 不符合 “简单请求” 的标准时，浏览器才会发送 OPTIONS 预检请求。
+
+根据 CORS 规范，符合以下条件的请求才算“简单请求”（不会触发预检请求）：
+- 请求方法必须是以下之一：
+  - GET
+  - HEAD
+  - POST
+- 请求头（Headers）必须满足以下要求：
+  - 仅允许 Accept、Accept-Language、Content-Language、Content-Type、DPR、Downlink、Save-Data、Viewport-Width、Width
+  - Content-Type 只能是：
+    - application/x-www-form-urlencoded
+    - multipart/form-data
+    - text/plain
+- 请求中不能使用 XMLHttpRequest 或 fetch 的一些特殊功能：
+  - 不能手动设置 Authorization 头（比如 Bearer token）。
+  - 不能使用 custom headers（如 X-My-Custom-Header）。
+  - 不能发送 application/json（因为 application/json 不属于简单请求的 Content-Type）。
 
 
 ## 参考文献
