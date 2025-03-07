@@ -126,6 +126,41 @@ function arePropsEqual(prevProps, nextProps) {
 export default memo(Button, arePropsEqual);
 ```
 
+### Hooks
+- 减少不必要的渲染
+  - `React.memo`: 用于函数组件，避免在 props 没有变化时重新渲染。
+  - `useMemo`: 用于缓存计算结果，避免在每次渲染时重新计算。
+  - `useCallback`: 用于缓存函数引用，避免在每次渲染时创建新的函数。
+
+- 避免不必要的副作用
+  - `useEffect` 依赖项: 确保 `useEffect` 的依赖项数组准确，避免不必要的副作用执行。
+  - 清理副作用: 在 `useEffect` 中返回一个清理函数，避免内存泄漏。
+
+- 状态管理的优化
+  - 状态拆分: 将状态拆分为多个 `useState`，避免不必要的重新渲染。
+  - `useReducer`: 对于复杂的状态逻辑，使用 `useReducer` 可以更好地管理状态。
+
+- 懒加载组件
+  - `React.lazy`: 用于懒加载组件，减少初始加载时间。
+  - `Suspense`: 配合 `React.lazy` 使用，提供加载中的 `fallback UI`。
+
+- 避免在渲染中创建对象或数组
+  - 在渲染中创建新的对象或数组会导致组件重新渲染，尽量将这些操作移到 `useMemo` 或 `useCallback` 中。
+
+- 使用 `useRef` 存储可变值
+  - `useRef` 可以用来存储可变值，且不会触发重新渲染。
+
+- 批量更新状态  
+  - 使用函数式更新状态，可以避免多次状态更新导致的多次渲染。
+
+- 使用 `useContext` 优化上下文
+  - 将上下文拆分为多个小的上下文，避免不必要的组件重新渲染。
+
+- 使用 `useLayoutEffect` 处理同步副作用
+  - 如果需要在 `DOM` 更新后同步执行某些操作，可以使用 `useLayoutEffect`。
+
+- 避免在循环或条件中使用 `Hooks`
+  - `Hooks` 必须在组件的顶层调用，不能在循环、条件或嵌套函数中使用。
 
 ## 三、总结
 

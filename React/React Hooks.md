@@ -190,10 +190,144 @@ useEffect(() => {
 
 还有很多额外的`hooks`，如：
 
-- useReducer
-- useCallback
-- useMemo
-- useRef
+> `React.memo`: 用于函数组件，避免在 props 没有变化时重新渲染。
+> `React.memo` 是一个高阶组件（`HOC`），用于优化函数组件的渲染行为。它通过浅比较组件的  `props` 来决定是否重新渲染组件。
+
+
+- `useReducer`:适用于管理复杂的状态逻辑，尤其是当状态更新依赖于之前的状态时。
+```js
+
+// reducer 是一个纯函数，接收当前状态和动作，返回新的状态。
+
+// useReducer 返回当前状态和 dispatch 函数，用于触发状态更新。
+
+// 适合处理复杂的状态逻辑，比如多个状态相互依赖的场景。
+
+import React, { useReducer } from 'react';
+
+// 定义 reducer 函数
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    case 'reset':
+      return { count: 0 };
+    default:
+      throw new Error('Unknown action type');
+  }
+};
+
+const Counter = () => {
+  // 初始化 useReducer
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+
+  return (
+    <div>
+      <h1>Count: {state.count}</h1>
+      <button onClick={() => dispatch({ type: 'increment' })}>Increment</button>
+      <button onClick={() => dispatch({ type: 'decrement' })}>Decrement</button>
+      <button onClick={() => dispatch({ type: 'reset' })}>Reset</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+- `useCallback`: 用于缓存函数引用，避免在每次渲染时创建新的函数，特别适合将函数作为 `props` 传递给子组件时使用。
+```js
+// useCallback 返回一个缓存的函数，只有当依赖项变化时才会重新创建。
+
+// 配合 React.memo 使用，可以避免子组件不必要的渲染。
+
+// 适合将函数作为 props 传递给子组件的场景。
+
+import React, { useState, useCallback } from 'react';
+
+const ChildComponent = React.memo(({ onClick }) => {
+  console.log('ChildComponent rendered');
+  return <button onClick={onClick}>Click Me</button>;
+});
+
+const ParentComponent = () => {
+  const [count, setCount] = useState(0);
+
+  // 使用 useCallback 缓存函数
+  const handleClick = useCallback(() => {
+    setCount((prevCount) => prevCount + 1);
+  }, []); // 依赖项为空数组，表示函数不会改变
+
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+      <ChildComponent onClick={handleClick} />
+    </div>
+  );
+};
+
+export default ParentComponent;
+```
+
+- `useMemo`: 用于缓存计算结果，避免在每次渲染时重复计算，特别适合处理昂贵的计算逻辑。
+```js
+// useMemo 返回一个缓存的值，只有当依赖项变化时才会重新计算。
+
+// 避免在每次渲染时重复执行昂贵的计算逻辑。
+
+// 适合处理需要缓存的计算结果或复杂的数据转换。
+import React, { useState, useMemo } from 'react';
+
+const ExpensiveCalculation = ({ number }) => {
+  // 使用 useMemo 缓存计算结果
+  const result = useMemo(() => {
+    console.log('Calculating...');
+    let sum = 0;
+    for (let i = 1; i <= number; i++) {
+      sum += i;
+    }
+    return sum;
+  }, [number]); // 只有当 number 变化时才会重新计算
+
+  return <div>Result: {result}</div>;
+};
+
+const App = () => {
+  const [number, setNumber] = useState(1);
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+      <button onClick={() => setCount((prev) => prev + 1)}>Increment Count</button>
+      <input
+        type="number"
+        value={number}
+        onChange={(e) => setNumber(parseInt(e.target.value))}
+      />
+      <ExpensiveCalculation number={number} />
+    </div>
+  );
+};
+
+export default App;
+```
+
+- `useRef`:可以用来存储可变值，且不会触发重新渲染。
+```js
+  const intervalRef = useRef();
+
+useEffect(() => {
+  intervalRef.current = setInterval(() => {
+    // do something
+  }, 1000);
+
+  return () => clearInterval(intervalRef.current);
+}, []);
+```
+
+
 
 
 

@@ -37,3 +37,39 @@ LIS 算法是否是移动次数最少的方法？
 
 因此，LIS 算法是一种启发式算法，它在大多数情况下都能取得较好的效果，但并不能保证总是找到最优解。
 
+
+
+#### 最长递增子序列
+```js
+// 输出一个数组
+function LIS(list) {
+    if(list.length == 0) return
+    const res = [[list[0]]];
+    for(let i = 1; i < list.length; i++){
+        _update(list[i])
+    }
+
+    function _update(n){
+        for(let i = res.length - 1; i >= 0; i--){
+            const line = res[i] // 数组第一个数字
+            const tail = line[line.length - 1] // 数组第最后一个数字
+
+            if(n > tail){
+                res[i+1] = [...line, n];
+                break;
+            }
+            if(n < tail && i === 0){
+                res[i] = [n]; 
+            }
+
+        }
+    }
+
+
+    return res[res.length - 1]
+}
+
+console.log(LIS([10,9,8,6,7,8,9,10,3,6,5,3,4,5]))
+// [6, 7, 8, 9, 10]
+```
+

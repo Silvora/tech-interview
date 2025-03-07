@@ -112,20 +112,21 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 // 看到上面编译结果中的 -1 和 1 了吗，这就是静态标记，这是在 Vue2 中没有的，patch 过程中就会判断这个标记来 Diff 优化流程，跳过一些静态节点对比
 ```
+
 - 事件监听缓存
-  ```js
-  // 比如这样一个有点击事件的按钮
-  <button @click="handleClick">按钮</button>
-
-  // Vue3 被编译后的结果
-  export function render(_ctx, _cache, $props, $setup, $data, $options) {
-    return (_openBlock(), _createElementBlock("button", {
-      onClick: _cache[0] || (_cache[0] = (...args) => (_ctx.handleClick && _ctx.handleClick(...args)))
-    }, "按钮"))
-  } 
-
-  // onClick 会先读取缓存，如果缓存没有的话，就把传入的事件存到缓存里，都可以理解为变成静态节点了，优秀吧，而在 Vue2 中就没有缓存，就是动态的
+```js
+// 比如这样一个有点击事件的按钮
+<button @click="handleClick">按钮</button>
+// Vue3 被编译后的结果
+export function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (_openBlock(), _createElementBlock("button", {
+    onClick: _cache[0] || (_cache[0] = (...args) => (_ctx.handleClick && _ctx.handleClick(...args)))
+  }, "按钮"))
+} 
+// onClick 会先读取缓存，如果缓存没有的话，就把传入的事件存到缓存里，都可以理解为变成静态节点了，优秀吧，而在 Vue2 中就没有缓存，就是动态的
   ```
+
+
 - SSR优化
 ```js
 // createStaticVNode 的使用
