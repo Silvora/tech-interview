@@ -344,6 +344,40 @@ useEffect(() => {
 `hooks`的出现，使函数组件的功能得到了扩充，拥有了类组件相似的功能，在我们日常使用中，使用`hooks`能够解决大多数问题，并且还拥有代码复用机制，因此优先考虑`hooks`
 
 
+## 四、解析
+
+#### 为什么 `React useState` 要使用数组而不是对象?
+
+`useState` 使用数组而不是对象的主要原因是 灵活性和简洁性。具体来说，数组的解构赋值允许开发者自由命名状态变量和更新函数，而对象则需要预先定义属性名。以下是详细原因：
+1. 灵活命名
+   - 数组的解构赋值允许开发者在调用 `useState` 时自由命名状态变量和更新函数。例如：
+
+    ```js
+    const [count, setCount] = useState(0);
+    const [name, setName] = useState("John");
+    ```
+
+    - 如果使用对象，开发者需要预先定义属性名，灵活性较低：
+    ```js
+    const { state: count, setState: setCount } = useState(0);
+    const { state: name, setState: setName } = useState("John");
+    ```
+2. 简洁性
+  - 数组的解构赋值语法更简洁，适合处理多个状态
+  - 如果使用对象，代码会显得冗长
+3. 一致性
+  - 数组的解构赋值方式在 `React` 中广泛使用（如 `useState`、`useReducer`），保持了 API 的一致性。
+  - 如果使用对象，可能会引入不一致的 `API` 设计。
+4. 性能
+   - 数组的解构赋值在性能上略微优于对象，因为对象需要查找属性名，而数组直接按索引访问。
+5. 扩展性
+   - 数组结构更容易扩展。例如，`useReducer` 也返回数组（`[state, dispatch]`），与 `useState` 的设计一致。
+
+`useState` 使用数组而非对象，主要是为了提供更灵活、简洁且一致的 API 设计。数组的解构赋值允许开发者自由命名状态变量和更新函数，同时保持了代码的简洁性和一致性。
+
+
+
+
 ## 参考文献
 
 - https://zh-hans.reactjs.org/docs/hooks-state.html

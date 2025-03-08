@@ -123,6 +123,86 @@ Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=Sec-WebSocket-Protocol: chat
 
 
 
+## 三、应用
+
+#### WebSocket 鉴权授权方案
+- 基于 Token 的鉴权
+    - 流程：客户端在建立 WebSocket 连接前，先通过 HTTP 请求获取一个 Token（如 JWT）。建立 WebSocket 连接时，客户端在握手请求的头部或 URL 参数中携带该 Token，服务器验证 Token 的有效性。
+    - 优点：简单易实现，适合无状态服务。
+    - 缺点：Token 过期或泄露可能导致安全问题。
+
+- 基于 Cookie 的鉴权
+    - 流程：客户端在建立 WebSocket 连接时，浏览器会自动携带相关 Cookie，服务器通过验证 Cookie 进行鉴权。
+    - 优点：无需额外处理，适合已有 Cookie 鉴权的系统。
+    - 缺点：依赖浏览器环境，不适合非浏览器客户端。
+
+- 基于 HTTP 基本认证
+    - 流程：客户端在 WebSocket 握手请求的 Authorization 头部携带用户名和密码，服务器验证后决定是否允许连接。
+    - 优点：简单直接。
+    - 缺点：安全性较低，需结合 HTTPS 使用
+
+- 自定义协议鉴权
+    - 流程：连接建立后，客户端发送包含鉴权信息的消息，服务器验证后决定是否保持连接。
+    - 优点：灵活，适合复杂场景。
+    - 缺点：实现复杂，需处理更多逻辑。
+
+
+
+#### WebSocket 断开重连机制
+- 自动重连
+监听 onclose 事件，触发后延迟一段时间尝试重新连接。
+
+    ```js
+    let ws;
+    function connect() {
+        ws = new WebSocket('wss://example.com');
+        ws.onclose = function() {
+            setTimeout(connect, 5000); // 5秒后重连
+        };
+    }
+    connect();
+    ```
+
+- 指数退避重连
+重连间隔时间随失败次数指数增长，避免频繁重连。
+
+    ```js
+    let ws;
+    let reconnectDelay = 1000; // 初始重连延迟
+    function connect() {
+        ws = new WebSocket('wss://example.com');
+        ws.onclose = function() {
+            setTimeout(connect, reconnectDelay);
+            reconnectDelay *= 2; // 延迟时间翻倍
+        };
+    }
+    connect();
+    ```
+
+- 心跳检测
+定期发送心跳消息，检测连接状态，发现断开后立即重连。
+
+    ```js
+    let ws;
+    let heartbeatInterval;
+    function connect() {
+        ws = new WebSocket('wss://example.com');
+        ws.onopen = function() {
+            heartbeatInterval = setInterval(() => {
+                ws.send('ping');
+            }, 30000); // 每30秒发送一次心跳
+        };
+        ws.onclose = function() {
+            clearInterval(heartbeatInterval);
+            setTimeout(connect, 5000); // 5秒后重连
+        };
+    }
+    connect();
+    ```
+
+
+
+
 ## 参考文献
 
 - https://zh.wikipedia.org/wiki/WebSocket
