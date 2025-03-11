@@ -324,6 +324,80 @@ activated(){
 
 注意：服务器端渲染期间`avtived`不被调用
 
+
+## 五、LRU 算法
+
+`LRU` 是一种缓存淘汰策略，其核心思想是：当缓存空间不足时，优先淘汰最久未被使用的数据。这种策略基于时间局部性原理，即最近被访问的数据在未来更有可能被再次访问。
+
+```js
+class LRUCache {
+  constructor(capacity) {
+    this.capacity = capacity; // 缓存容量
+    this.cache = new Map(); // 使用 Map 存储键值对
+  }
+
+  // 获取缓存中的值
+  get(key) {
+    if (!this.cache.has(key)) {
+      return -1; // 如果键不存在，返回 -1
+    }
+    const value = this.cache.get(key);
+    this.cache.delete(key); // 删除旧的键值对
+    this.cache.set(key, value); // 将键值对重新插入，表示最近使用
+    return value;
+  }
+
+  // 插入键值对
+  put(key, value) {
+    if (this.cache.has(key)) {
+      this.cache.delete(key); // 如果键已存在，先删除
+    } else if (this.cache.size >= this.capacity) {
+      // 如果缓存已满，淘汰最久未使用的键值对
+      const oldestKey = this.cache.keys().next().value; // 获取最久未使用的键
+      this.cache.delete(oldestKey); // 删除最久未使用的键值对
+    }
+    this.cache.set(key, value); // 插入新的键值对
+  }
+
+  // 删除指定键值对
+  delete(key) {
+    this.cache.delete(key);
+  }
+
+  // 清空缓存
+  clear() {
+    this.cache.clear();
+  }
+
+  // 打印当前缓存内容（用于调试）
+  print() {
+    console.log([...this.cache.entries()]);
+  }
+}
+
+
+
+const lruCache = new LRUCache(3); // 创建一个容量为 3 的 LRU 缓存
+
+lruCache.put(1, "A"); // 缓存: [[1, "A"]]
+lruCache.put(2, "B"); // 缓存: [[1, "A"], [2, "B"]]
+lruCache.put(3, "C"); // 缓存: [[1, "A"], [2, "B"], [3, "C"]]
+lruCache.print(); // 输出: [[1, "A"], [2, "B"], [3, "C"]]
+
+lruCache.get(1); // 返回 "A"，缓存: [[2, "B"], [3, "C"], [1, "A"]]
+lruCache.print(); // 输出: [[2, "B"], [3, "C"], [1, "A"]]
+
+lruCache.put(4, "D"); // 缓存已满，淘汰最久未使用的键 2，缓存: [[3, "C"], [1, "A"], [4, "D"]]
+lruCache.print(); // 输出: [[3, "C"], [1, "A"], [4, "D"]]
+
+lruCache.delete(1); // 删除键 1，缓存: [[3, "C"], [4, "D"]]
+lruCache.print(); // 输出: [[3, "C"], [4, "D"]]
+
+lruCache.clear(); // 清空缓存
+lruCache.print(); // 输出: []
+```
+
+
 ## 参考文献
 
 - https://www.cnblogs.com/dhui/p/13589401.html
