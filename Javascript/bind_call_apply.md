@@ -216,6 +216,7 @@ Function.prototype.myApply = function (context) {
 		result = context.fn()
 	}
 	delete context.fn
+    return result
 };
 
 ```

@@ -43,3 +43,16 @@ Monorepo架构:
     - 项目的子项目架构
     - 对于工具分类封装的架构
     - 对于复杂且丰富的应用需求的功能切片
+
+
+#### 如何解决依赖全局版本和 packages 版本不一致情况
+- 使用 Workspaces
+  - 工具支持：如 Yarn Workspaces、pnpm Workspaces、Lerna 等，可以统一管理依赖。、
+  - 依赖提升：将公共依赖提升到根目录的 node_modules，避免重复安装。
+- 锁定依赖版本
+  - Lock 文件：使用 package-lock.json 或 yarn.lock 锁定依赖版本，确保一致性。
+  - 版本范围：在 package.json 中明确依赖版本范围，避免冲突。
+- 使用工具管理依赖
+  - Lerna：管理多包依赖和版本发布。
+  - Nx：提供依赖管理和构建优化。
+  - Rush：微软开发的 Monorepo 管理工具，支持依赖管理和增量构建。

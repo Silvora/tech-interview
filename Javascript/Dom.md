@@ -181,7 +181,7 @@ p.innerHTML = 'ABC <span style="color:red">RED</span> XYZ';
 
 自动对字符串进行`HTML`编码，保证无法设置任何`HTML`标签
 
-```
+```js
 // 获取<p id="p-id">...</p >
 var p = document.getElementById('p-id');
 // 设置文本:
