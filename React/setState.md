@@ -155,6 +155,7 @@ componentDidMount() {
 - 在组件生命周期或React合成事件中，setState是异步
 - 在setTimeout（异步操作）或者原生dom事件中，setState是同步
 - React 18 引入了自动批处理（`Automatic Batching`）机制，即使在`setTimeout`、`Promise`等异步操作中，`setState`也会被批量处理。这意味着在这些情况下，`setState`可能仍然是异步的。
+- useState()同样适用
   
 如果你希望在某些情况下强制同步更新，可以使用`ReactDOM.flushSync`：
 ```js
