@@ -112,7 +112,7 @@ module.exports = {
 - file-loader: 分发文件到output目录并返回相对路径
 - url-loader: 和file-loader类似，但是当文件小于设定的limit时可以返回一个Data Url
 - html-minify-loader: 压缩HTML
-- babel-loader :用babel来转换ES6文件到ES
+- babel-loader :用babel来转换ES6文件到ES5
 
 
 

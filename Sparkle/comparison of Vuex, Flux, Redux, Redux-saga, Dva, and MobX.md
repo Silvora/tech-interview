@@ -48,13 +48,18 @@ var store = {
 
 `Flux`把一个应用分成了4个部分： `View` `Action` `Dispatcher` `Store`
 
+数据流动是单向的：Action -> Dispatcher -> Store -> View
+
 ![](https://pic2.zhimg.com/v2-fb6a545f55dac505d0ded33fa2284bc5_1440w.jpg)
 
 > Flux的最大特点就是数据都是单向流动的
 
 
 ## 二、Redux
-
+Flux 的进化版，简化了 Dispatcher，核心思想是：
+- 单一数据源（Single Source of Truth）
+- 状态只读（Immutable State）
+- 纯函数更新（Reducers）
 #### 流程
 ![](https://picx.zhimg.com/v2-9e7e7d6b492706746ba19845bd559963_1440w.jpg)
 
@@ -68,7 +73,9 @@ var store = {
 
 ![](https://picx.zhimg.com/v2-3eea040acf4cd03884ba3e903b936425_1440w.jpg)
 
-简单来说，`Redux`有三大原则： 单一数据源：`Flux` 的数据源可以是多个。 `State` 是只读的：`Flux` 的 `State` 可以随便改。 * 使用纯函数来执行修改：`Flux` 执行修改的不一定是纯函数。
+简单来说，`Redux`有三大原则： 单一数据源：`Flux` 的数据源可以是多个。 `State` 是只读的：`Flux` 的 `State` 可以随便改。 使用纯函数来执行修改：`Flux` 执行修改的不一定是纯函数。
+
+异步操作需要中间件，比如 `Redux-thunk`、`Redux-saga`
 
 > Redux 和 Flux 一样都是单向数据流
 
@@ -82,6 +89,11 @@ var store = {
 其实可以感觉到 `Flux`、`Redux`、`Vuex` 三个的思想都差不多，在具体细节上有一些差异，总的来说都是让 `View` 通过某种方式触发 `Store` 的事件或方法，`Store` 的事件或方法对 `State` 进行修改或返回一个新的 `State`，`State` 改变之后，`View` 发生响应式改变
 
 
+## Pinia
+可以看作 Vuex 的“现代化重制版”
+
+
+
 ## MobX
 
 前面扯了这么多，其实还都是 `Flux` 体系的，都是单向数据流方案。接下来要说的 `MobX`，就和他们不太一样了。
@@ -91,6 +103,8 @@ var store = {
 `Flux` 体系的状态管理方式，只是一个选项，但并不代表是唯一的选项。`MobX` 就是另一个选项。
 
 `MobX`背后的哲学很简单：`任何源自应用状态的东西都应该自动地获得`。译成人话就是状态只要一变，其他用到状态的地方就都跟着自动变。
+
+响应式状态管理，核心思想是 自动追踪依赖，不用手动 `dispatch`。
 
 ![](https://pic2.zhimg.com/v2-fe37245ce0be3d15fcc4afdbb6cc7e31_1440w.jpg)
 
@@ -111,5 +125,49 @@ obj.b = 3 // 什么都没有发生
 obj.a = 2 // observe 函数的回调触发了，控制台输出：2
 ```
 
+## Recoil
+Facebook 自家产的“轻量级选手”，适合取代 `Redux`
+
+核心概念：
+- Atom：最小的状态单元，可被多个组件共享
+- Selector：衍生状态，类似 Vue 的 computed
+- Effect：副作用处理，支持异步请求、订阅等
+
+## Zustand
+由 Jotai、React-spring 的作者出品，主打“简洁、高性能、无样板代码”
+- Store：状态仓库，函数式创建状态
+- Set：更新状态的方法
+- Get：读取状态的方法
+- Middleware：支持持久化、日志、异步流处理
+
+
 #### 对比
 但其实 `Redux` 和 `MobX` 并没有孰优孰劣，`Redux` 比 `Mobx` 更多的样板代码，是因为特定的设计约束。如果项目比较小的话，使用 `MobX` 会比较灵活，但是大型项目，像 `MobX` 这样没有约束，没有最佳实践的方式，会造成代码很难维护，各有利弊。一般来说，小项目建议 `MobX` 就够了，大项目还是用 `Redux` 比较合适
+
+ 核心概念对比
+
+| 特性            | Redux                     | MobX                 | Recoil                 | Zustand                 | Pinia                   | Vuex                     |
+|-----------------|----------------------------|----------------------|------------------------|-------------------------|-------------------------|--------------------------|
+| **数据流模式**    | 单向数据流                 | 响应式                | 响应式 + 选择性订阅     | 响应式 + 选择性订阅      | 响应式 + 组合式模块化    | 单向数据流 + 模块化        |
+| **状态存储**      | 全局 store（不可变状态）    | 类似 class 的 observable | Atom（最小状态单元）    | create() 创建 store     | defineStore() 创建 store | 单个大 store / 模块化      |
+| **状态更新**      | reducer（纯函数）           | 直接修改 observable   | set() 修改 Atom        | set() 直接修改状态       | this.xxx = xxx          | mutation 修改状态         |
+| **异步操作**      | 需 thunk / saga 中间件      | actions 内部支持异步  | selector 支持 async     | action 支持 async/await | actions 支持 async/await | actions 支持 async/await  |
+| **订阅机制**      | 全部组件重新渲染 (connect)  | 自动追踪依赖，局部更新 | 选择性订阅 atom / selector | 选择性订阅（组件只订阅用到的状态） | storeToRefs 解耦订阅     | mapState / getter 解耦订阅 |
+
+总结推荐
+
+| **特点**        | **Redux** | **MobX** | **Recoil** | **Zustand** | **Pinia** | **Vuex** |
+|-----------------|-----------|----------|------------|------------|----------|---------|
+| **学习成本**   | 中等      | 低       | 低         | **超低**   | 低       | 中等    |
+| **状态订阅性能** | 一般      | 高       | **极高**   | **极高**   | 高       | 中等    |
+| **状态管理粒度** | 中等      | 一般     | **细粒度** | **细粒度** | 一般     | 中等    |
+| **生态插件**   | **极强**  | 中等     | 一般       | 一般       | 中等     | 强      |
+| **TS 支持**    | 强        | 一般     | 强         | **极强**   | 强       | 强      |
+
+
+最终推荐方案
+
+- **大项目首选**：Redux / Vuex 🚀  
+- **小项目 / 快速开发**：Zustand / MobX / Pinia 💨  
+- **状态粒度细 / 组件级管理**：Recoil / Zustand 🔥  
+- **Vue3 项目**：Pinia ✅  
