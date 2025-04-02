@@ -121,6 +121,15 @@ Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=Sec-WebSocket-Protocol: chat
 - 体育实况更新
 - 股票基金报价实时更新
 
+|特性|http|websocket|
+|:--|:--|:--|
+|连接方式|请求-响应(短连接)|持久化连接|
+|通信方式|单向(客户端请求->服务器响应)|双向(客户端<->服务器)|
+|数据格式|纯文本(html,json,xml等)|二进制或文本(json,protobuf等)|
+|连接维持|请求完成断开(除非keep-alive)|连接保持,直到主动关闭|
+|服务器推送|轮询或sse|服务器可主动推送|
+
+> http2.0 采用二进制格式传输数据，而 HTTP/1.x 是基于纯文本
 
 
 ## 三、应用
