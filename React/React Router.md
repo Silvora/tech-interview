@@ -25,6 +25,7 @@ categories:
 - react-router-native：基于 react-router，加入了 react-native 运行环境下的一些功能
 
 - react-router-config: 用于配置静态路由的工具库
+- TanStack Router: 类型安全和状态管理器
 
 
 
