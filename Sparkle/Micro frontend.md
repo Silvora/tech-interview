@@ -62,3 +62,82 @@ categories:
 - qiankun = 兼容性强、生态成熟，适用于大多数场景。
 - MicroApp = 性能较优、隔离性更强，适用于轻量化微前端架构。
 - wujie = 最高性能 & 最强隔离，适用于对安全性、稳定性要求极高的项目。
+
+## 三、Proxy实现css/js隔离
+
+#### 使用 Shadow DOM
+
+Shadow DOM 是浏览器提供的原生方法，可以隔离 JavaScript 作用域和 CSS 样式。
+
+优点：
+-	CSS 作用域隔离，不会影响外部样式。
+- 组件化开发，适用于 Web Components。
+
+
+```js
+const shadowHost = document.createElement('div');
+document.body.appendChild(shadowHost);
+
+// 创建 Shadow DOM
+const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+
+// 添加样式
+const style = document.createElement('style');
+style.textContent = `
+  .box {
+    color: red;
+    font-size: 20px;
+  }
+`;
+shadowRoot.appendChild(style);
+
+// 添加 HTML 内容
+const div = document.createElement('div');
+div.className = 'box';
+div.textContent = 'Shadow DOM 内容';
+shadowRoot.appendChild(div);
+```
+
+#### 使用 Proxy 进行 JS 变量隔离
+
+虽然 Proxy 不能直接隔离 CSS，但它可以用于隔离 JS 变量，防止全局污染。例如，可以拦截 window 对象的访问，实现“沙箱环境”。
+
+适用于：在 iframe、Web Components 或微前端应用中隔离全局变量。
+```js
+function createSandbox() {
+  const fakeWindow = new Proxy({}, {
+    get(target, prop) {
+      if (prop in target) return target[prop];
+      return window[prop]; // 允许访问原始 window 的属性
+    },
+    set(target, prop, value) {
+      target[prop] = value; // 仅存储在 fakeWindow 里，不污染全局
+      return true;
+    }
+  });
+
+  return fakeWindow;
+}
+
+const sandbox = createSandbox();
+sandbox.alert('这条消息仍然会显示'); // 使用原 window.alert
+sandbox.foo = 'sandbox value';
+console.log(window.foo); // undefined
+```
+
+
+#### CSS 作用域隔离
+适用于： 微前端、多个应用共存的情况。
+使用 :scope 或 scoped（部分浏览器支持）
+
+```css
+:scope .box {
+  color: blue;
+}
+```
+通过 data- 属性命名空间
+```css
+[data-app="app1"] .box {
+  color: green;
+}
+```
