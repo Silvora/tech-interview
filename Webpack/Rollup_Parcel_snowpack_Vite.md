@@ -197,6 +197,43 @@ vite ，是一种新型前端构建工具，能够显著提升前端开发体验
 
 
 
+### vite 与 webpack的选择
+选择 Vite 的场景:
+- 开发体验优先
+  - 快速启动：Vite 利用浏览器原生 ESM 实现秒级启动，适合需要频繁重启开发服务器的项目（如小型项目或原型开发）。
+  - 即时热更新（HMR）：修改代码后几乎无延迟更新，适合对开发效率要求高的场景（如 UI 库、单页应用）。
+
+- 现代浏览器项目
+  - 项目主要面向现代浏览器（支持原生 ESM），且无需大量兼容旧浏览器。
+
+- 轻量级工具链
+  - 希望避免复杂配置，Vite 开箱支持 TypeScript、JSX、CSS Modules 等，适合 React/Vue 等现代框架的简单项目。
+
+- 库开发
+  - 开发 npm 库时，Vite 的 Rollup 打包模式能快速生成轻量、优化的产物。
+
+- 静态站点/SSR
+  - 使用 VuePress、VitePress 或类似工具时，Vite 的按需编译特性能显著提升速度。
+
+
+选择 Webpack 的场景:
+- 复杂生产构建需求
+  - 需要高级代码分割（Code Splitting）、Tree Shaking 或自定义优化时，Webpack 的插件生态（如 TerserPlugin、SplitChunksPlugin）更成熟。
+
+- 遗留浏览器支持
+  - 项目需要兼容 IE11 等旧浏览器，Webpack 能通过 babel-loader 和 core-js 实现更精细的 polyfill 控制。
+
+- 微前端或大型应用
+  - 需要模块联邦（Module Federation）或复杂依赖管理（如动态加载第三方脚本），Webpack 的运行时机制更完善。
+
+- 深度定制化
+  - 项目需要特殊处理（如自定义 loader 转换非标准文件类型），Webpack 的灵活配置能力更强。
+
+- 稳定性和长期维护
+  - 企业级项目需要长期维护，Webpack 的成熟度和社区支持更可靠（尤其针对历史项目升级）。
+
+
+
 ## 参考文献
 
 - https://zhuanlan.zhihu.com/p/95684686
